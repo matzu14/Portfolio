@@ -1,20 +1,23 @@
-import { customCard } from '../components/CustomCard'
-import { customHeader } from '../components/CustomHeader'
-import { cardsContainer } from '../components/cardsContainer'
-import { customFooter } from '../components/CustomFooter'
+import "./App.css";
+import Router from "./router";
 
-import './App.css';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+	palette: {
+		mode: "dark",
+	},
+});
 
 function App() {
-  return (
-    <>
-      <customHeader>Mi pequeña aventura en el desarrollo web</customHeader>
-      <cardsContainr>
-        <customCard></customCard>
-      </cardsContainr>
-      <customFooter />
-    </>
-  );
+	return (
+		<>
+			<ThemeProvider theme={darkTheme}>
+				<Router />
+			</ThemeProvider>
+		</>
+	);
 }
 
 export default App;
