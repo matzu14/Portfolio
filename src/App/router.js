@@ -13,8 +13,9 @@ import SmplCrd from "../components/demoCard";
 
 function Router() {
 	return (
-		<HashRouter>
+		<HashRouter basename={process.env.PUBLIC_URL}>
 			<Routes>
+				<Route path="/" element={<Home />} />
 				<Route path="/home" element={<Home />} />
 				<Route path="/splatted-ralsei" element={<SpltRls />} />
 				<Route path="/card" element={<SmplCrd />} />
