@@ -14,7 +14,7 @@ import Grid from "@mui/material/Grid";
 
 import Avatar from "@mui/material/Avatar";
 
-import Card from "./Card";
+import DmoCrd from "./Card";
 
 function SmplCrd() {
 	React.useEffect(() => {
@@ -120,15 +120,17 @@ function SmplCrd() {
 			<Grid
 				sx={{
 					justifyContent: "center",
-					alignItems: "flex-start",
+					alignItems: "stretch",
+					width: "95%",
+					margin: "0 auto",
 				}}
 				my={1}
 				container
 				spacing={1}
 			>
 				{posts.map((post) => (
-					<Grid key={post.id} item xs={3}>
-						<Card props={post} />
+					<Grid key={post.id} item xs={4} sx={{ display: "flex" }}>
+						<DmoCrd props={{ post, tag }} />
 					</Grid>
 				))}
 			</Grid>

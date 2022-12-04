@@ -114,38 +114,36 @@ function Home() {
 						src={
 							"https://preview.redd.it/j7lkd5d5c9591.png?width=1300&format=png&auto=webp&s=57318da9a0fd90c6ba3e97dea69523e77d4ee39f"
 						}
-					></Avatar>
+					/>
 				</HeaderHomepage>
-				<Box
-					sx={{
-						display: "flex",
-					}}
-				>
-					<Grid container spacing={1}>
-						{Object.entries(sites)
-							.sort((a, b) => a[1].siteIndex - b[1].siteIndex)
-							.map((site) => (
-								<Grid item xs>
-									<HomepageCard key={site[1].url} site={site[1]} />
-								</Grid>
-							))}
-						<Grid item xs>
-							<Card sx={{ height: "100%" }}>
-								<CardActionArea
-									sx={{ width: "100%", height: "100%" }}
-									href={"https://matzu14.github.io/gyst/"}
-									target={"_blank"}
-								>
-									<CardContent>
-										<Typography>GYST</Typography>
-									</CardContent>
+				<Grid container spacing={1}>
+					{Object.entries(sites)
+						.sort((a, b) => a[1].siteIndex - b[1].siteIndex)
+						.map((site) => (
+							<Grid item xs>
+								<HomepageCard key={site[1].url} site={site[1]} />
+							</Grid>
+						))}
+					<Grid item xs>
+						<Card sx={{ height: "100%" }}>
+							<CardActionArea
+								sx={{
+									height: "100%",
+									width: "100%",
+									display: "grid",
+								}}
+								href={"https://matzu14.github.io/gyst/"}
+								target={"_blank"}
+							>
+								<CardContent>
+									<Typography>GYST</Typography>
+								</CardContent>
 
-									{/* {site.img ? <CardMedia src={site.img}></CardMedia> : null} */}
-								</CardActionArea>
-							</Card>
-						</Grid>
+								{/* {site.img ? <CardMedia src={site.img}></CardMedia> : null} */}
+							</CardActionArea>
+						</Card>
 					</Grid>
-				</Box>
+				</Grid>
 
 				{/* <Button
 					sx={{

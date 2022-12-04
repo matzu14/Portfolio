@@ -12,6 +12,7 @@ import {
 	styled,
 	Typography,
 	Box,
+	CardActionArea,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -25,26 +26,39 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 const CardContainer = styled(Card)(({ theme }) => ({
 	...theme.typography.body2,
-	textAlign: "center",
+	display: "flex",
 	backgroundColor: theme.palette.background,
 	color: theme.palette.text.secondary,
-	placeSelf: "center",
 	flexDirection: "column",
-	boxSizing: "content-box",
+	maxHeight: "100%",
+	width: "100%",
+	"& 	.MuiCardMedia-media": { width: "100%" },
 }));
+
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
+const TransitionCard = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="down" ref={ref} {...props} />;
+});
+
 function DmoCrd({ props }) {
-	const [open, setOpen] = React.useState(false);
-
-	const handleClickOpen = () => {
-		setOpen(true);
+	const [openJsonData, setOpenJsonData] = React.useState(false);
+	const handleJsonOpen = () => {
+		setOpenJsonData(true);
+	};
+	const handleJsonClose = () => {
+		setOpenJsonData(false);
 	};
 
-	const handleClose = () => {
-		setOpen(false);
+	const [openMedia, setOpenMedia] = React.useState(false);
+	const handleOpenMedia = () => {
+		setOpenMedia(true);
 	};
+	const handleCloseMedia = () => {
+		setOpenMedia(false);
+	};
+
 	return (
 		<>
 			<CardContainer>
@@ -52,15 +66,14 @@ function DmoCrd({ props }) {
 					avatar={
 						<Avatar
 							sx={{
-								height: "60px",
-								width: "60px",
-								border: "3px solid white",
+								height: "40px",
+								width: "40px",
 							}}
-							src={props.preview.url}
+							src={props.post.preview.url}
 						/>
 					}
-					title={props.tags.artist}
-					subheader={props.tags.character}
+					title={props.post.tags.artist}
+					subheader={props.post.tags.character}
 					sx={{
 						"& .MuiCardHeader-content": {
 							display: "flex",
@@ -69,34 +82,38 @@ function DmoCrd({ props }) {
 						},
 					}}
 				/>
-				<Box
-					sx={{
-						display: "grid",
-						alignItems: "center",
-						alignContent: "center",
-						backgroundImage: "url(" + props.sample.url + ")",
-						backgroundRepeat: "no-repeat",
-						backgroundPosition: "center",
-						backgroundSize: "100% 100%",
-					}}
-				>
-					<CardMedia
-						component={"img"}
-						src={props.sample.url}
-						alt=""
+				<CardContent sx={{ height: "100%", padding: 0 }}>
+					<CardActionArea
 						sx={{
-							objectFit: "scale-down",
-							backdropFilter: "blur(5px)",
-							minHeight: "400px",
-							maxHeight: "800px",
+							display: "grid",
+							backgroundImage: "url(" + props.post.sample.url + ")",
+							backgroundRepeat: "no-repeat",
+							backgroundPosition: "center",
+							backgroundSize: "cover",
+							minHeight: "100%",
 						}}
-					/>
-				</Box>
+						onClick={handleOpenMedia}
+					>
+						<CardMedia
+							component={"img" || "video"}
+							src={props.post.sample.url}
+							alt=""
+							sx={{
+								objectFit: "scale-down",
+								height: "100%",
+								backdropFilter: "blur(10px)",
+							}}
+							autoPlay
+							loop
+							muted
+						/>
+					</CardActionArea>
+				</CardContent>
 				<CardContent>
 					<Typography textAlign={"start"} gutterBottom>
-						{props.tags.character} by{" "}
-						<Link href={props.sources[0]} target="_blank">
-							{props.tags.artist}
+						{props.post.tags.character} by{" "}
+						<Link href={props.post.sources[0]} target="_blank">
+							{props.post.tags.artist}
 						</Link>
 					</Typography>
 					<Typography
@@ -116,11 +133,14 @@ function DmoCrd({ props }) {
 					}}
 				>
 					<Stack direction={"row"} spacing={1} pl={1}>
-						<Link target={"_blank"} href={"https://e621.net/posts/" + props.id}>
+						<Link
+							target={"_blank"}
+							href={"https://e621.net/posts/" + props.post.id}
+						>
 							See post in e621.net
 						</Link>
 						<Link
-							onClick={handleClickOpen}
+							onClick={handleJsonOpen}
 							sx={{
 								":hover": {
 									cursor: "pointer",
@@ -137,76 +157,125 @@ function DmoCrd({ props }) {
 				</CardActions>
 			</CardContainer>
 			<Dialog
-				open={open}
+				open={openJsonData}
 				TransitionComponent={Transition}
-				keepMounted
-				onClose={handleClose}
 				aria-describedby="alert-dialog-slide-description"
 				sx={{
 					"& .MuiDialog-container": {
 						width: "100%",
 					},
 					"& .MuiDialog-paper": {
-						padding: 4,
-						width: "100%",
-						maxWidth: "100%",
+						maxWidth: "45vw",
+						maxHeight: "80vh",
 					},
+					backdropFilter: "blur(10px)",
+				}}
+				scroll={"paper"}
+			>
+				<DialogTitle>{props.tag}</DialogTitle>
+				<DialogContent dividers>
+					<DialogContentText sx={{ whiteSpace: "break-spaces" }}>
+						<Typography sx={{ wordBreak: "break-all" }}>
+							{JSON.stringify(props, null, 4)}
+						</Typography>
+						{/* &#123;
+					<ContentPadding>
+					<Typography sx={{ maxWidth: "100%", wordBreak: "break-all" }}>
+					id: &#123;
+					<br />
+					<ContentPadding>{props.id}</ContentPadding> &#125;,
+					<br />
+					File: &#123; <br />
+					<ContentPadding>
+					ext: {props.file.ext} <br />
+					md5: {props.file.md5} <br />
+					width: {props.file.width} <br />
+					height: {props.file.height} <br />
+					url:{" "}
+					<Link href={props.file.url} target={"_blank"}>
+					{props.file.url}
+					</Link>{" "}
+					</ContentPadding>
+					&#125;,
+					<br /> Sample: &#123; <br />
+					<ContentPadding>
+					width: {props.sample.width} <br />
+					height: {props.sample.height} <br />
+					url:{" "}
+					<Link href={props.sample.url} target={"_blank"}>
+					{props.sample.url}
+					</Link>
+					</ContentPadding>
+					&#125;,
+					<br /> Preview: &#123; <br />
+					<ContentPadding>
+					width: {props.preview.width} <br />
+					height: {props.preview.height} <br />
+					url:
+								<Link href={props.preview.url} target={"_blank"}>
+								{props.preview.url}
+								</Link>{" "}
+								</ContentPadding>
+								&#125;,
+								<br />
+								Source(s): &#123;
+								<ContentPadding>
+								{props.sources.map((source) => (
+									<>
+									<Link href={source} target={"_blank"}>
+									{source}
+									</Link>{" "}
+									</>
+									))}
+									</ContentPadding>
+									&#125;
+									</Typography>
+									</ContentPadding>
+								&#125; */}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleJsonClose}>Accept</Button>
+				</DialogActions>
+			</Dialog>
+			<Dialog
+				open={openMedia}
+				onClose={handleCloseMedia}
+				TransitionComponent={TransitionCard}
+				aria-describedby="alert-dialog-slide-description"
+				sx={{
+					"& .MuiDialog-paper": {
+						margin: 0,
+					},
+					backdropFilter: "blur(10px)",
 				}}
 			>
-				<Typography>
-					id: <br /> &#123;
-					<br /> &nbsp;&nbsp;&nbsp;&nbsp;{props.id} <br />
-					&#125;,
-					<br />
-					File:
-					<br />
-					&#123; <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;ext: {props.file.ext} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;md5: {props.file.md5} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;width: {props.file.width} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;height: {props.file.height} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;url:{" "}
-					<Link href={props.file.url} target={"_blank"}>
-						{props.file.url}
-					</Link>{" "}
-					<br />
-					&#125;,
-					<br /> Sample:
-					<br /> &#123; <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;width: {props.sample.width} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;height: {props.sample.height} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;url:{" "}
-					<Link href={props.sample.url} target={"_blank"}>
-						{props.sample.url}
-					</Link>{" "}
-					<br />
-					&#125;,
-					<br /> Preview:
-					<br /> &#123; <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;width: {props.preview.width} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;height: {props.preview.height} <br />
-					&nbsp;&nbsp;&nbsp;&nbsp;url:{" "}
-					<Link href={props.preview.url} target={"_blank"}>
-						{props.preview.url}
-					</Link>{" "}
-					<br />
-					&#125;,
-					<br />
-					Source(s): <br />
-					&#123;
-					<br />
-					{props.sources.map((source) => (
-						<>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Link href={source} target={"_blank"}>
-								{source}
-							</Link>{" "}
-							<br />
-						</>
-					))}
-					&#125;
-					{console.log(props.alternates)}
-				</Typography>
+				<Card>
+					<CardMedia
+						component={"img"}
+						src={props.post.file.url}
+						autoPlay
+						loop
+						muted
+						contols={"disabled"}
+					/>
+				</Card>
+				<CardActions
+					sx={{
+						backgroundColor: "transparent",
+					}}
+				>
+					<Link
+						sx={{
+							color: "#fff",
+							":hover": { cursor: "pointer" },
+						}}
+						href={props.post.file.url}
+						target={"_blank"}
+					>
+						Open original
+					</Link>
+				</CardActions>
 			</Dialog>
 		</>
 	);
